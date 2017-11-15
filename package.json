@@ -1,8 +1,13 @@
 {
   "name": "gettext-to-messageformat",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Convert gettext input (po/pot/mo files) into messageformat-compatible JSON",
-  "keywords": ["messageformat", "gettext", "po", "i18n"],
+  "keywords": [
+    "messageformat",
+    "gettext",
+    "po",
+    "i18n"
+  ],
   "main": "index.js",
   "repository": "https://github.com/eemeli/gettext-to-messageformat",
   "author": "Eemeli Aro <eemeli@gmail.com>",
