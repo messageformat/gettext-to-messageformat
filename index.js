@@ -86,7 +86,10 @@ const convert = (parse, input, options) => {
       else delete data[id]
     }
   }
-  return hasContext || options.forceContext ? translations : translations['']
+  return {
+    headers,
+    translations: hasContext || options.forceContext ? translations : translations['']
+  }
 }
 
 module.exports = {

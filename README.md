@@ -22,7 +22,7 @@ object destructuring and arrow functions, you'll want to use a transpiler for th
 
 ```js
 const { parsePo, parseMo } = require('gettext-to-messageformat')
-const json = parsePo(`
+const { headers, translations } = parsePo(`
 # Examples from http://pology.nedohodnik.net/doc/user/en_US/ch-poformat.html
 # Note that the given plural-form is incomplete
 msgid ""
@@ -48,8 +48,8 @@ msgstr "Nema zvezde po imenu %(starname)s."
 `)
 
 const MessageFormat = require('messageformat')
-const mf = new MessageFormat('pl')
-const messages = mf.compile(json)
+const mf = new MessageFormat(headers.language)
+const messages = mf.compile(translations)
 
 messages['Time: %1 second']([1])
 // 'Czas: 1 sekunda'
@@ -87,6 +87,10 @@ the parser, including the following fields:
 
 For more options, take a look at the [source](./index.js).
 
+Both functions return an object `{ headers, translations }` where `headers`
+contains the raw contents of the input file's headers, with keys lower-cased, and
+`translations` is an object containing the MessageFormat strings keyed by their
+`msgid` and if used, `msgctxt`.
 
 [messageformat]: https://messageformat.github.io/
 [gettext-parser]: https://github.com/smhg/gettext-parser
