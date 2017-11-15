@@ -85,6 +85,9 @@ the parser, including the following fields:
   needs to be set to the pluralization category names to be used for the input
   enumerated categories if any message includes a plural form.
 
+- `verbose` (boolean, default `false`) – If set to `true`, missing translations
+  will cause warnings.
+
 For more options, take a look at the [source](./index.js).
 
 Both functions return an object `{ headers, translations }` where `headers`

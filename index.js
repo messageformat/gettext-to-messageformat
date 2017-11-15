@@ -28,7 +28,8 @@ const defaultOptions = {
       pattern: /%%/g,
       replacement: '%'
     }
-  ]
+  ],
+  verbose: false
 }
 
 const getPluralCategories = ({ language, 'plural-forms': pluralForms }) => {
@@ -46,15 +47,21 @@ const getPluralCategories = ({ language, 'plural-forms': pluralForms }) => {
 }
 
 const getMessageFormat = (
-  { pluralCategories, pluralVariablePattern, replacements },
+  { pluralCategories, pluralVariablePattern, replacements, verbose },
   { msgid, msgid_plural, msgstr }
 ) => {
   if (!msgid || !msgstr) return null
-  if (!msgstr[0]) msgstr[0] = msgid
+  if (!msgstr[0]) {
+    if (verbose) console.warn('Translation not found:', msgid)
+    msgstr[0] = msgid
+  }
   if (msgid_plural) {
     if (!pluralCategories) throw new Error('Plural categories not identified')
     for (let i = 1; i < pluralCategories.length; ++i) {
-      if (!msgstr[i]) msgstr[i] = msgid_plural
+      if (!msgstr[i]) {
+        if (verbose) console.warn('Plural translation not found:', msgid, i)
+        msgstr[i] = msgid_plural
+      }
     }
   }
   msgstr = msgstr.map(str => (
