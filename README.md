@@ -22,7 +22,7 @@ object destructuring and arrow functions, you'll want to use a transpiler for th
 
 ```js
 const { parsePo, parseMo } = require('gettext-to-messageformat')
-const { headers, translations } = parsePo(`
+const { headers, pluralFunction, translations } = parsePo(`
 # Examples from http://pology.nedohodnik.net/doc/user/en_US/ch-poformat.html
 # Note that the given plural-form is incomplete
 msgid ""
@@ -48,7 +48,7 @@ msgstr "Nema zvezde po imenu %(starname)s."
 `)
 
 const MessageFormat = require('messageformat')
-const mf = new MessageFormat(headers.language)
+const mf = new MessageFormat({ [headers.language]: pluralFunction })
 const messages = mf.compile(translations)
 
 messages['Time: %1 second']([1])
@@ -80,20 +80,32 @@ the parser, including the following fields:
   If no context is set, by default this top-level key is not included unless
   `forceContext` is set to `true`.
 
-- `pluralCategories` (array of strings) – If the Language header is not set in
-  the input, or if its Plural-Forms `nplurals` value is not 1, 2, or 6, this
-  needs to be set to the pluralization category names to be used for the input
-  enumerated categories if any message includes a plural form.
+- `pluralFunction` (function) – If your input file does not include a Plural-Forms
+  header, or if for whatever reason you'd prefer to use your own, set this to be
+  a stringifiable function that takes in a single variable, and returns the
+  appropriate pluralisation category. Following the model used internally in
+  [messageformat], the function variable should also include `cardinal` as a
+  member array of its possible categories, in the order corresponding to the
+  gettext pluralisation categories. This is relevant if you'd like to avoid the
+  `new Function` constructor otherwise used to generate `pluralFunction`, or to
+  allow for more fine-tuned categories than gettext allows, e.g. differentiating
+  between the categories of `'1.0'` and `'1'`.
 
 - `verbose` (boolean, default `false`) – If set to `true`, missing translations
   will cause warnings.
 
 For more options, take a look at the [source](./index.js).
 
-Both functions return an object `{ headers, translations }` where `headers`
-contains the raw contents of the input file's headers, with keys lower-cased, and
-`translations` is an object containing the MessageFormat strings keyed by their
-`msgid` and if used, `msgctxt`.
+Both functions return an object containing the following fields:
+
+- `headers` (object) – The raw contents of the input file's headers, with keys
+  lower-cased
+- `pluralFunction` (function) – An appropriate pluralisation function to use for
+  the output translations, suitable to be used directly by [messageformat]. May
+  be `null` if none was set in `options` and if the input did not include a
+  Plural-Forms header.
+- `translations` (object) – An object containing the MessageFormat strings keyed
+  by their `msgid` and if used, `msgctxt`.
 
 [messageformat]: https://messageformat.github.io/
 [gettext-parser]: https://github.com/smhg/gettext-parser

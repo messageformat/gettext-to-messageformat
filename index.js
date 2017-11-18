@@ -1,10 +1,10 @@
 const { mo, po } = require('gettext-parser')
-const pluralCategories = require('make-plural/umd/pluralCategories')
+const getPluralFunction = require('./plural-forms')
 
 const defaultOptions = {
   defaultCharset: null,
   forceContext: false,
-  pluralCategories: null,
+  pluralFunction: null,
   pluralVariablePattern: /%(?:\((\w+)\))?\w/,
   replacements: [
     {
@@ -32,22 +32,8 @@ const defaultOptions = {
   verbose: false
 }
 
-const getPluralCategories = ({ language, 'plural-forms': pluralForms }) => {
-  if (language) {
-    const pc = pluralCategories[language.replace(/[-_].*/, '')]
-    if (pc) return pc.cardinal
-  }
-  const m = pluralForms && pluralForms.match(/^nplurals=(\d);/)
-  switch (m && m[1]) {
-    case '1': return ['other']
-    case '2': return ['one', 'other']
-    case '6': return ['zero', 'one', 'two', 'few', 'many', 'other']
-    default: return null
-  }
-}
-
 const getMessageFormat = (
-  { pluralCategories, pluralVariablePattern, replacements, verbose },
+  { pluralFunction, pluralVariablePattern, replacements, verbose },
   { msgid, msgid_plural, msgstr }
 ) => {
   if (!msgid || !msgstr) return null
@@ -56,8 +42,8 @@ const getMessageFormat = (
     msgstr[0] = msgid
   }
   if (msgid_plural) {
-    if (!pluralCategories) throw new Error('Plural categories not identified')
-    for (let i = 1; i < pluralCategories.length; ++i) {
+    if (!pluralFunction) throw new Error('Plural-Forms not defined')
+    for (let i = 1; i < pluralFunction.cardinal.length; ++i) {
       if (!msgstr[i]) {
         if (verbose) console.warn('Plural translation not found:', msgid, i)
         msgstr[i] = msgid_plural
@@ -73,7 +59,7 @@ const getMessageFormat = (
   if (msgid_plural) {
     const m = msgid_plural.match(pluralVariablePattern)
     const pv = m && m[1] || '0'
-    const pc = pluralCategories.map((c, i) => `${c}{${msgstr[i]}}`)
+    const pc = pluralFunction.cardinal.map((c, i) => `${c}{${msgstr[i]}}`)
     return `{${pv}, plural, ${pc.join(' ')}}`
   }
   return msgstr[0]
@@ -82,7 +68,9 @@ const getMessageFormat = (
 const convert = (parse, input, options) => {
   options = Object.assign(defaultOptions, options)
   const { headers, translations } = parse(input, options.defaultCharset)
-  if (!options.pluralCategories) options.pluralCategories = getPluralCategories(headers)
+  if (!options.pluralFunction) {
+    options.pluralFunction = getPluralFunction(headers['plural-forms'])
+  }
   let hasContext = false
   for (const context in translations) {
     if (context) hasContext = true
@@ -95,6 +83,7 @@ const convert = (parse, input, options) => {
   }
   return {
     headers,
+    pluralFunction: options.pluralFunction,
     translations: hasContext || options.forceContext ? translations : translations['']
   }
 }
