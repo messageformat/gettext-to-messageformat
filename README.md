@@ -4,7 +4,7 @@ Converts gettext input (po/pot/mo files) into [messageformat]-compatible JSON,
 using [gettext-parser].
 
 
-#### Installation
+### Installation
 
 ```sh
 npm install --save gettext-to-messageformat
@@ -18,13 +18,12 @@ If using in an environment that does not natively support ES6 features such as
 object destructuring and arrow functions, you'll want to use a transpiler for this.
 
 
-#### Usage
+### Usage
 
 ```js
 const { parsePo, parseMo } = require('gettext-to-messageformat')
 const { headers, pluralFunction, translations } = parsePo(`
 # Examples from http://pology.nedohodnik.net/doc/user/en_US/ch-poformat.html
-# Note that the given plural-form is incomplete
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -65,7 +64,7 @@ For more examples, [gettext-parser] includes a selection of `.po` and `.mo` file
 in its test fixtures.
 
 
-#### `parseMo(input, options)` and `parsePo(input, options)`
+### API: `parseMo(input, options)` and `parsePo(input, options)`
 
 The two functions differ only in their expectation of the input's format. `input`
 may be a string or a Buffer; `options` is an optional set of configuration for
