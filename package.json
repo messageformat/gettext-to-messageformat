@@ -1,6 +1,6 @@
 {
   "name": "gettext-to-messageformat",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Convert gettext input (po/pot/mo files) into messageformat-compatible JSON",
   "keywords": [
     "messageformat",
