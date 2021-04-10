@@ -47,7 +47,7 @@ msgstr "Nema zvezde po imenu %(starname)s."
 `)
 
 const MessageFormat = require('messageformat')
-const mf = new MessageFormat({ [headers.language]: pluralFunction })
+const mf = new MessageFormat({ [headers.Language]: pluralFunction })
 const messages = mf.compile(translations)
 
 messages['Time: %1 second']([1])
@@ -98,7 +98,7 @@ For more options, take a look at the [source](./index.js).
 Both functions return an object containing the following fields:
 
 - `headers` (object) – The raw contents of the input file's headers, with keys
-  lower-cased
+  using canonical casing.
 - `pluralFunction` (function) – An appropriate pluralisation function to use for
   the output translations, suitable to be used directly by [messageformat]. May
   be `null` if none was set in `options` and if the input did not include a
